@@ -44,11 +44,6 @@ export function DebtDetail({ debtId }: { debtId: string }) {
 
   const repaidAmount = debt.amount - debt.remainingAmount;
 
-  const isOverdueHint =
-    debt.dueDate &&
-    new Date(debt.dueDate) < new Date() &&
-    debt.remainingAmount > 0;
-
   const statusColors: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
     active: "default",
     paid: "secondary",
@@ -92,14 +87,16 @@ export function DebtDetail({ debtId }: { debtId: string }) {
             <p className="text-lg font-semibold text-destructive">{formatCurrency(debt.remainingAmount)}</p>
           </div>
         </div>
-        {debt.dueDate && (
-          <div className="text-muted-foreground text-sm">Due: {debt.dueDate}</div>
-        )}
-        {isOverdueHint && (
-          <p className="text-sm text-destructive font-medium">
-            This debt is past its due date and still has an outstanding balance.
-          </p>
-        )}
+      </div>
+
+      {/* Cycle link */}
+      <div>
+        <Link
+          href={`/debts/${debtId}/cycle`}
+          className="text-sm text-primary underline"
+        >
+          View cycle detail
+        </Link>
       </div>
 
       {/* Activity / Repayment section */}
