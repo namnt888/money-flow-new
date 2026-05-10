@@ -8,9 +8,9 @@ import { formatCurrency } from "@/lib/format";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-export function CycleDetail({ debtId }: { debtId: string }) {
+export function CycleDetail({ debtId, cycleId }: { debtId: string; cycleId: string }) {
   const { data: debt, isLoading: isDebtLoading } = useDebt(debtId);
-  const { data: cycle, isLoading: isCycleLoading } = useCycle(debtId);
+  const { data: cycle, isLoading: isCycleLoading } = useCycle(cycleId);
 
   const isLoading = isDebtLoading || isCycleLoading;
 
@@ -47,12 +47,37 @@ export function CycleDetail({ debtId }: { debtId: string }) {
         Back to debt
       </Link>
 
-      {/* Cycle header */}
+      {/* Debt Context Summary */}
       <div className="space-y-3">
         <h2 className="text-2xl font-bold">Cycle Detail</h2>
-        <p className="text-muted-foreground">
-          {debt.personName} — {debt.description}
-        </p>
+        <div className="flex flex-col gap-1">
+          <p className="text-lg font-medium">{debt.personName}</p>
+          <p className="text-muted-foreground">{debt.description}</p>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 pt-4 border-t">
+          <div className="pt-3">
+            <span className="text-xs text-muted-foreground">Original</span>
+            <p className="text-base font-semibold text-muted-foreground">{formatCurrency(debt.amount)}</p>
+          </div>
+          <div className="pt-3">
+            <span className="text-xs text-muted-foreground">Cashback</span>
+            <p className="text-base font-semibold text-blue-600">{formatCurrency(debt.cashback ?? 0)}</p>
+          </div>
+          <div className="pt-3">
+            <span className="text-xs text-muted-foreground">Final Price</span>
+            <p className="text-base font-semibold">{formatCurrency(debt.finalPrice ?? debt.amount)}</p>
+          </div>
+          <div className="pt-3">
+            <span className="text-xs text-muted-foreground">Repaid</span>
+            <p className="text-base font-semibold text-green-600">
+              {formatCurrency(debt.amount - debt.remainingAmount)}
+            </p>
+          </div>
+          <div className="pt-3">
+            <span className="text-xs text-muted-foreground">Remaining</span>
+            <p className="text-base font-semibold text-destructive">{formatCurrency(debt.remainingAmount)}</p>
+          </div>
+        </div>
       </div>
 
       {/* Cycle summary */}

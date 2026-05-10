@@ -5,13 +5,16 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DebtRepaymentList } from "./debt-repayment-list";
 import { useRepayments } from "@/features/debts/hooks/use-repayments";
+import { useCycles } from "@/features/debts/hooks/use-cycles";
 import { formatCurrency } from "@/lib/format";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { CycleCard } from "./cycle-card";
 
 export function DebtDetail({ debtId }: { debtId: string }) {
   const { data: debt, isLoading } = useDebt(debtId);
   const { data: repayments, isLoading: isRepaymentsLoading } = useRepayments(debtId);
+  const { data: cycles, isLoading: isCyclesLoading } = useCycles(debtId);
 
   if (isLoading) {
     return (
@@ -89,19 +92,33 @@ export function DebtDetail({ debtId }: { debtId: string }) {
         </div>
       </div>
 
-      {/* Cycle link */}
-      <div>
-        <Link
-          href={`/debts/${debtId}/cycle`}
-          className="text-sm text-primary underline"
-        >
-          View cycle detail
-        </Link>
+      {/* Cycles section */}
+      <div className="space-y-4">
+        <h3 className="text-xl font-bold">Cycles</h3>
+        {isCyclesLoading ? (
+          <div className="space-y-3">
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-20 w-full" />
+          </div>
+        ) : cycles && cycles.length > 0 ? (
+          <div className="grid gap-3">
+            {cycles.map((cycle) => (
+              <CycleCard
+                key={cycle.id}
+                debtId={debtId}
+                cycle={cycle}
+                remainingAmount={debt.remainingAmount}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">No cycles found for this debt.</p>
+        )}
       </div>
 
-      {/* Activity / Repayment section */}
-      <div className="space-y-3">
-        <h3 className="text-lg font-semibold">Activity</h3>
+      {/* Activity / Repayment section - De-emphasized */}
+      <div className="space-y-3 pt-6 border-t">
+        <h3 className="text-lg font-semibold text-muted-foreground">Recent Activity</h3>
         {isRepaymentsLoading ? (
           <div className="space-y-2">
             <Skeleton className="h-5 w-full" />

@@ -185,4 +185,12 @@ export const mockCycles: DebtCycle[] = [
     createdAt: "2025-03-01T00:00:00Z",
     updatedAt: "2025-03-01T00:00:00Z",
   },
+  {
+    id: "c2",
+    debtId: "d1",
+    label: "2025-04",
+    amount: 500,
+    createdAt: "2025-04-01T00:00:00Z",
+    updatedAt: "2025-04-01T00:00:00Z",
+  },
 ];
