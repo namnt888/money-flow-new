@@ -1,6 +1,7 @@
 import type { Account } from "@/domain/account/types";
 import type { Debt, DebtRepayment } from "@/domain/debt/types";
 import type { DebtCycle } from "@/domain/debt/cycle";
+import type { CycleRow } from "@/domain/debt/cycle-row";
 import type { Transaction } from "@/domain/transaction/types";
 
 export const mockPeople = [
@@ -184,5 +185,80 @@ export const mockCycles: DebtCycle[] = [
     amount: 500,
     createdAt: "2025-03-01T00:00:00Z",
     updatedAt: "2025-03-01T00:00:00Z",
+  },
+  {
+    id: "c2",
+    debtId: "d1",
+    label: "2025-04",
+    amount: 0,
+    createdAt: "2025-04-01T00:00:00Z",
+    updatedAt: "2025-04-01T00:00:00Z",
+  },
+];
+
+export const mockCycleRows: CycleRow[] = [
+  {
+    id: "cr1",
+    cycleId: "c1",
+    type: "Out",
+    date: "2025-03-05",
+    shop: "Youtube",
+    notes: "Youtube 2025-03 [2 slots] [29,243]/6",
+    amount: 58485,
+    percentBack: 0,
+    cashbackAmount: 0,
+    cumulativeBack: 0,
+    finalPrice: 58485,
+    shopSource: "Youtube",
+    createdAt: "2025-03-05T00:00:00Z",
+    updatedAt: "2025-03-05T00:00:00Z",
+  },
+  {
+    id: "cr2",
+    cycleId: "c1",
+    type: "Out",
+    date: "2025-03-05",
+    shop: "iCloud",
+    notes: "iCloud 2025-03 [2 slots] [43,150]/6",
+    amount: 86300,
+    percentBack: 0,
+    cashbackAmount: 0,
+    cumulativeBack: 0,
+    finalPrice: 86300,
+    shopSource: "iCloud",
+    createdAt: "2025-03-05T00:00:00Z",
+    updatedAt: "2025-03-05T00:00:00Z",
+  },
+  {
+    id: "cr3",
+    cycleId: "c1",
+    type: "In",
+    date: "2025-03-10",
+    shop: "Shopee",
+    notes: "Cashback from March promos",
+    amount: 50000,
+    percentBack: 5,
+    cashbackAmount: 2500,
+    cumulativeBack: 2500,
+    finalPrice: 47500,
+    shopSource: "Shopee",
+    createdAt: "2025-03-10T00:00:00Z",
+    updatedAt: "2025-03-10T00:00:00Z",
+  },
+  {
+    id: "cr4",
+    cycleId: "c1",
+    type: "Out",
+    date: "2025-03-15",
+    shop: "Netflix",
+    notes: "Monthly subscription",
+    amount: 220000,
+    percentBack: 2,
+    cashbackAmount: 4400,
+    cumulativeBack: 6900,
+    finalPrice: 215600,
+    shopSource: "Netflix",
+    createdAt: "2025-03-15T00:00:00Z",
+    updatedAt: "2025-03-15T00:00:00Z",
   },
 ];

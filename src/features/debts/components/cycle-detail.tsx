@@ -1,18 +1,21 @@
 "use client";
 
 import { useCycle } from "@/features/debts/hooks/use-cycle";
+import { useCycleRows } from "@/features/debts/hooks/use-cycle-rows";
 import { useDebt } from "@/features/debts/hooks/use-debt";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/format";
+import { CycleRowsTable } from "@/features/debts/components/cycle-rows-table";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 export function CycleDetail({ debtId }: { debtId: string }) {
   const { data: debt, isLoading: isDebtLoading } = useDebt(debtId);
   const { data: cycle, isLoading: isCycleLoading } = useCycle(debtId);
+  const { data: rows, isLoading: isRowsLoading } = useCycleRows(cycle?.id ?? "");
 
-  const isLoading = isDebtLoading || isCycleLoading;
+  const isLoading = isDebtLoading || isCycleLoading || isRowsLoading;
 
   if (isLoading) {
     return (
@@ -84,7 +87,7 @@ export function CycleDetail({ debtId }: { debtId: string }) {
       {/* Cycle rows / activity area */}
       <div className="space-y-3 border-t pt-4">
         <h3 className="text-lg font-semibold">Cycle Activity</h3>
-        <p className="text-sm text-muted-foreground">No cycle activity yet.</p>
+        <CycleRowsTable rows={rows ?? []} />
       </div>
     </div>
   );

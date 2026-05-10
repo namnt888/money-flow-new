@@ -14,14 +14,21 @@ vi.mock("@/features/debts/hooks/use-cycle", () => ({
   useCycle: vi.fn(),
 }));
 
+vi.mock("@/features/debts/hooks/use-cycle-rows", () => ({
+  useCycleRows: vi.fn(),
+}));
+
 import { useDebt } from "@/features/debts/hooks/use-debt";
 import { useCycle } from "@/features/debts/hooks/use-cycle";
+import { useCycleRows } from "@/features/debts/hooks/use-cycle-rows";
 
 const mockUseDebt = useDebt as ReturnType<typeof vi.fn>;
 const mockUseCycle = useCycle as ReturnType<typeof vi.fn>;
+const mockUseCycleRows = useCycleRows as ReturnType<typeof vi.fn>;
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockUseCycleRows.mockReturnValue({ data: [], isLoading: false });
 });
 
 const validDebt = {
@@ -83,12 +90,12 @@ describe("CycleDetail", () => {
     expect(screen.getByText("No cycle data available.")).toBeInTheDocument();
   });
 
-  it("shows empty cycle activity state", () => {
+  it("shows cycle activity section", () => {
     mockUseDebt.mockReturnValue({ data: validDebt, isLoading: false });
     mockUseCycle.mockReturnValue({ data: validCycle, isLoading: false });
+    mockUseCycleRows.mockReturnValue({ data: [], isLoading: false });
     render(<CycleDetail debtId="d1" />);
     expect(screen.getByText("Cycle Activity")).toBeInTheDocument();
-    expect(screen.getByText("No cycle activity yet.")).toBeInTheDocument();
   });
 
   it("shows remaining amount from debt", () => {
@@ -101,7 +108,47 @@ describe("CycleDetail", () => {
   it("shows back link to debt detail", () => {
     mockUseDebt.mockReturnValue({ data: validDebt, isLoading: false });
     mockUseCycle.mockReturnValue({ data: validCycle, isLoading: false });
+    mockUseCycleRows.mockReturnValue({ data: [], isLoading: false });
     render(<CycleDetail debtId="d1" />);
     expect(screen.getByText("Back to debt")).toBeInTheDocument();
+  });
+
+  it("renders transaction rows when cycle rows exist", () => {
+    mockUseDebt.mockReturnValue({ data: validDebt, isLoading: false });
+    mockUseCycle.mockReturnValue({ data: validCycle, isLoading: false });
+    mockUseCycleRows.mockReturnValue({
+      data: [
+        {
+          id: "cr1",
+          cycleId: "c1",
+          type: "Out",
+          date: "2025-03-05",
+          shop: "Youtube",
+          notes: "test note",
+          amount: 58485,
+          percentBack: 0,
+          cashbackAmount: 0,
+          cumulativeBack: 0,
+          finalPrice: 58485,
+          shopSource: "Youtube",
+          createdAt: "2025-03-05T00:00:00Z",
+          updatedAt: "2025-03-05T00:00:00Z",
+        },
+      ],
+      isLoading: false,
+    });
+    render(<CycleDetail debtId="d1" />);
+    const shopCells = screen.getAllByText("Youtube");
+    expect(shopCells.length).toBeGreaterThanOrEqual(1);
+    const amountCells = screen.getAllByText("58485.00");
+    expect(amountCells.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("shows no-transactions state when rows are empty", () => {
+    mockUseDebt.mockReturnValue({ data: validDebt, isLoading: false });
+    mockUseCycle.mockReturnValue({ data: validCycle, isLoading: false });
+    mockUseCycleRows.mockReturnValue({ data: [], isLoading: false });
+    render(<CycleDetail debtId="d1" />);
+    expect(screen.getByText("No transactions yet.")).toBeInTheDocument();
   });
 });
