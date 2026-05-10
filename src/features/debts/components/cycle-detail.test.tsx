@@ -73,7 +73,7 @@ describe("CycleDetail", () => {
     expect(screen.getByText("Cycle Detail")).toBeInTheDocument();
     expect(screen.getByText((c) => c.includes("Alice Johnson"))).toBeInTheDocument();
     expect(screen.getByText("2025-03")).toBeInTheDocument();
-    expect(screen.getByText("500.00")).toBeInTheDocument();
+    expect(screen.getAllByText("500.00")[0]).toBeInTheDocument();
   });
 
   it("shows no-cycle fallback when cycle is null", () => {

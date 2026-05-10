@@ -47,21 +47,35 @@ export function CycleDetail({ debtId, cycleId }: { debtId: string; cycleId: stri
         Back to debt
       </Link>
 
-      {/* Cycle header */}
+      {/* Debt Context Summary */}
       <div className="space-y-3">
         <h2 className="text-2xl font-bold">Cycle Detail</h2>
         <div className="flex flex-col gap-1">
           <p className="text-lg font-medium">{debt.personName}</p>
           <p className="text-muted-foreground">{debt.description}</p>
         </div>
-        <div className="flex gap-6 pt-2 text-sm">
-          <div>
-            <span className="text-muted-foreground">Original Debt: </span>
-            <span className="font-medium">{formatCurrency(debt.amount)}</span>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 pt-4 border-t">
+          <div className="pt-3">
+            <span className="text-xs text-muted-foreground">Original</span>
+            <p className="text-base font-semibold text-muted-foreground">{formatCurrency(debt.amount)}</p>
           </div>
-          <div>
-            <span className="text-muted-foreground">Total Remaining: </span>
-            <span className="text-destructive font-medium">{formatCurrency(debt.remainingAmount)}</span>
+          <div className="pt-3">
+            <span className="text-xs text-muted-foreground">Cashback</span>
+            <p className="text-base font-semibold text-blue-600">{formatCurrency(debt.cashback ?? 0)}</p>
+          </div>
+          <div className="pt-3">
+            <span className="text-xs text-muted-foreground">Final Price</span>
+            <p className="text-base font-semibold">{formatCurrency(debt.finalPrice ?? debt.amount)}</p>
+          </div>
+          <div className="pt-3">
+            <span className="text-xs text-muted-foreground">Repaid</span>
+            <p className="text-base font-semibold text-green-600">
+              {formatCurrency(debt.amount - debt.remainingAmount)}
+            </p>
+          </div>
+          <div className="pt-3">
+            <span className="text-xs text-muted-foreground">Remaining</span>
+            <p className="text-base font-semibold text-destructive">{formatCurrency(debt.remainingAmount)}</p>
           </div>
         </div>
       </div>
