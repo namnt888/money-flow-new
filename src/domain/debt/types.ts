@@ -7,6 +7,8 @@ export interface Debt extends BaseEntity {
   personName: string;
   description: string;
   amount: number;
+  cashback?: number;
+  finalPrice?: number;
   remainingAmount: number;
   interestRate: number | null;
   dueDate: string | null;
