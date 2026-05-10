@@ -40,27 +40,26 @@ export function DebtList() {
       {debts.map((debt) => (
         <div
           key={debt.id}
-          className="flex flex-col gap-2 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between"
+          className="flex flex-col gap-2 rounded-lg border bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center sm:justify-between"
         >
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="font-medium">{debt.personName}</span>
               <Badge variant={statusColors[debt.status] ?? "outline"}>
-                {debt.status}
+                {debt.status.charAt(0).toUpperCase() + debt.status.slice(1)}
               </Badge>
             </div>
             <p className="text-sm text-muted-foreground">{debt.description}</p>
           </div>
-          <div className="text-right">
+          <div className="shrink-0 text-right">
             <p className="text-lg font-semibold">
               ${debt.remainingAmount.toFixed(2)}
-              {debt.remainingAmount < debt.amount && (
-                <span className="text-sm font-normal text-muted-foreground">
-                  {" "}
-                  / ${debt.amount.toFixed(2)}
-                </span>
-              )}
             </p>
+            {debt.remainingAmount < debt.amount && (
+              <p className="text-xs text-muted-foreground">
+                of ${debt.amount.toFixed(2)} total
+              </p>
+            )}
           </div>
         </div>
       ))}
