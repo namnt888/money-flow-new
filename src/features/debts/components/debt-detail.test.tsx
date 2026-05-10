@@ -45,19 +45,19 @@ describe("DebtDetail", () => {
   it("shows not-found when debt is null", () => {
     mockUseDebt.mockReturnValue({ data: null, isLoading: false });
     render(<DebtDetail debtId="d-none" />);
-    expect(screen.getByText("Debt not found.")).toBeDefined();
-    expect(screen.getByText("Back to debts")).toBeDefined();
+    expect(screen.getByText("Debt not found.")).toBeInTheDocument();
+    expect(screen.getByText("Back to debts")).toBeInTheDocument();
   });
 
   it("renders debt fields when data is available", () => {
     mockUseDebt.mockReturnValue({ data: validDebt, isLoading: false });
     render(<DebtDetail debtId="d1" />);
-    expect(screen.getByText("Alice Johnson")).toBeDefined();
-    expect(screen.getByText("Active")).toBeDefined();
-    expect(screen.getByText("Personal loan")).toBeDefined();
-    expect(screen.getByText("$2000.00 total")).toBeDefined();
-    expect(screen.getByText("$1500.00 remaining")).toBeDefined();
-    expect(screen.getByText("Due: 2025-12-31")).toBeDefined();
+    expect(screen.getByText("Alice Johnson")).toBeInTheDocument();
+    expect(screen.getByText("Active")).toBeInTheDocument();
+    expect(screen.getByText("Personal loan")).toBeInTheDocument();
+    expect(screen.getByText("$2000.00 total")).toBeInTheDocument();
+    expect(screen.getByText("$1500.00 remaining")).toBeInTheDocument();
+    expect(screen.getByText("Due: 2025-12-31")).toBeInTheDocument();
   });
 
   it("omits due date line when dueDate is null", () => {
