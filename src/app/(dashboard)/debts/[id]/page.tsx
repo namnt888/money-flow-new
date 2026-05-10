@@ -1,6 +1,4 @@
 import { DebtDetail } from "@/features/debts/components/debt-detail";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 
 type Params = Promise<{ id: string }>;
 
