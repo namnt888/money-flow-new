@@ -19,39 +19,37 @@ export function CycleRowsTable({ rows }: CycleRowsTableProps) {
     <div>
       {/* Desktop table */}
       <div className="hidden sm:block overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="w-full text-sm whitespace-nowrap">
           <thead>
             <tr className="border-b text-left text-muted-foreground">
-              <th className="pb-2 pr-2 font-medium">ID</th>
-              <th className="pb-2 pr-2 font-medium">Type</th>
-              <th className="pb-2 pr-2 font-medium">Date</th>
-              <th className="pb-2 pr-2 font-medium">Shop</th>
-              <th className="pb-2 pr-2 font-medium">Notes</th>
-              <th className="pb-2 pr-2 text-right font-medium">Amount</th>
-              <th className="pb-2 pr-2 font-medium">% Back</th>
-              <th className="pb-2 pr-2 text-right font-medium">đ Back</th>
-              <th className="pb-2 pr-2 text-right font-medium">Σ Back</th>
-              <th className="pb-2 pr-2 text-right font-medium">Final Price</th>
+              <th className="pb-2 pr-3 font-medium">ID</th>
+              <th className="pb-2 pr-3 font-medium">Type</th>
+              <th className="pb-2 pr-3 font-medium">Date</th>
+              <th className="pb-2 pr-3 font-medium">Shop</th>
+              <th className="pb-2 pr-3 font-medium">Notes</th>
+              <th className="pb-2 pr-3 text-right font-medium">Amount</th>
+              <th className="pb-2 pr-3 font-medium">% Back</th>
+              <th className="pb-2 pr-3 text-right font-medium">đ Back</th>
+              <th className="pb-2 pr-3 text-right font-medium">Σ Back</th>
+              <th className="pb-2 pr-3 text-right font-medium">Final Price</th>
               <th className="pb-2 font-medium">Source</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((row) => (
               <tr key={row.id} className="border-b last:border-0">
-                <td className="py-2 pr-2 text-xs text-muted-foreground">{shortId(row.id)}</td>
-                <td className="py-2 pr-2">
-                  <Badge variant={row.type === "In" ? "secondary" : "outline"}>{row.type}</Badge>
-                </td>
-                <td className="py-2 pr-2">{row.date}</td>
-                <td className="py-2 pr-2 font-medium">{row.shop}</td>
-                <td className="py-2 pr-2 max-w-[160px] truncate text-muted-foreground" title={row.notes}>
+                <td className="py-2 pr-3 text-xs text-muted-foreground">{shortId(row.id)}</td>
+                <td className="py-2 pr-3">{typeBadge(row.type)}</td>
+                <td className="py-2 pr-3">{row.date}</td>
+                <td className="py-2 pr-3 font-medium">{row.shop}</td>
+                <td className="py-2 pr-3 max-w-[200px] truncate text-muted-foreground" title={row.notes}>
                   {row.notes}
                 </td>
-                <td className="py-2 pr-2 text-right">{formatCurrency(row.amount)}</td>
-                <td className="py-2 pr-2 text-xs">{formatPercent(row.percentBack)}</td>
-                <td className="py-2 pr-2 text-right">{formatCurrency(row.cashbackAmount)}</td>
-                <td className="py-2 pr-2 text-right font-semibold">{formatCurrency(row.cumulativeBack)}</td>
-                <td className="py-2 pr-2 text-right">{formatCurrency(row.finalPrice)}</td>
+                <td className="py-2 pr-3 text-right">{formatCurrency(row.amount)}</td>
+                <td className="py-2 pr-3">{formatPercent(row.percentBack)}</td>
+                <td className="py-2 pr-3 text-right">{formatCurrency(row.cashbackAmount)}</td>
+                <td className="py-2 pr-3 text-right font-semibold">{formatCurrency(row.cumulativeBack)}</td>
+                <td className="py-2 pr-3 text-right">{formatCurrency(row.finalPrice)}</td>
                 <td className="py-2 text-xs text-muted-foreground">{row.shopSource}</td>
               </tr>
             ))}
@@ -66,7 +64,7 @@ export function CycleRowsTable({ rows }: CycleRowsTableProps) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="text-xs text-muted-foreground">{shortId(row.id)}</span>
-                <Badge variant={row.type === "In" ? "secondary" : "outline"}>{row.type}</Badge>
+                {typeBadge(row.type)}
               </div>
               <span className="font-semibold">{formatCurrency(row.amount)}</span>
             </div>
@@ -110,4 +108,14 @@ function shortId(id: string): string {
 function formatPercent(value: number): string {
   if (value === 0) return "0%";
   return `${value.toFixed(2)}%`;
+}
+
+function typeBadge(type: string) {
+  if (type === "In") {
+    return <Badge className="bg-green-600 hover:bg-green-600">{type}</Badge>;
+  }
+  if (type === "Out") {
+    return <Badge variant="destructive">{type}</Badge>;
+  }
+  return <Badge variant="outline">{type}</Badge>;
 }

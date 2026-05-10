@@ -14,14 +14,21 @@ vi.mock("@/features/debts/hooks/use-repayments", () => ({
   useRepayments: vi.fn(),
 }));
 
+vi.mock("@/features/debts/hooks/use-cycles", () => ({
+  useCycles: vi.fn(),
+}));
+
 import { useDebt } from "@/features/debts/hooks/use-debt";
 import { useRepayments } from "@/features/debts/hooks/use-repayments";
+import { useCycles } from "@/features/debts/hooks/use-cycles";
 
 const mockUseDebt = useDebt as ReturnType<typeof vi.fn>;
 const mockUseRepayments = useRepayments as ReturnType<typeof vi.fn>;
+const mockUseCycles = useCycles as ReturnType<typeof vi.fn>;
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockUseCycles.mockReturnValue({ data: [], isLoading: false });
 });
 
 const validDebt = {
@@ -134,6 +141,6 @@ describe("DebtDetail", () => {
     mockUseDebt.mockReturnValue({ data: validDebt, isLoading: false });
     mockUseRepayments.mockReturnValue({ data: [], isLoading: false });
     render(<DebtDetail debtId="d1" />);
-    expect(screen.getByText("View cycle detail")).toBeInTheDocument();
+    expect(screen.getByText("Cycles")).toBeInTheDocument();
   });
 });
