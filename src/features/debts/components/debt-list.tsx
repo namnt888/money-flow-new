@@ -41,7 +41,6 @@ export function DebtList() {
       {debts.map((debt) => (
         <Link
           key={debt.id}
-          href={`/debts/${debt.id}`}
           className="flex flex-col gap-2 rounded-lg border bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center sm:justify-between"
         >
           <div className="space-y-1">
