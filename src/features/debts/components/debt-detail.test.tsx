@@ -86,17 +86,14 @@ describe("DebtDetail", () => {
     expect(screen.getByText("Active")).toBeInTheDocument();
     expect(screen.getByText("Personal loan")).toBeInTheDocument();
     expect(screen.getByText("2000.00")).toBeInTheDocument();
-    expect(screen.getByText("Due: 2025-12-31")).toBeInTheDocument();
   });
 
-  it("omits due date line when dueDate is null", () => {
-    mockUseDebt.mockReturnValue({
-      data: { ...validDebt, dueDate: null },
-      isLoading: false,
-    });
+  it("no longer shows due date or overdue hint", () => {
+    mockUseDebt.mockReturnValue({ data: validDebt, isLoading: false });
     mockUseRepayments.mockReturnValue({ data: [], isLoading: false });
     render(<DebtDetail debtId="d1" />);
     expect(screen.queryByText(/Due:/)).toBeNull();
+    expect(screen.queryByText(/past its due date/)).toBeNull();
   });
 
   it("shows repaid amount derived from total minus remaining", () => {
@@ -133,31 +130,10 @@ describe("DebtDetail", () => {
     expect(skeletons.length).toBeGreaterThanOrEqual(2);
   });
 
-  it("shows overdue hint when due date past and remaining > 0", () => {
-    const pastDueDebt = {
-      ...validDebt,
-      dueDate: "2024-01-01",
-      remainingAmount: 500,
-    };
-    mockUseDebt.mockReturnValue({ data: pastDueDebt, isLoading: false });
+  it("shows cycle link from debt detail", () => {
+    mockUseDebt.mockReturnValue({ data: validDebt, isLoading: false });
     mockUseRepayments.mockReturnValue({ data: [], isLoading: false });
     render(<DebtDetail debtId="d1" />);
-    expect(
-      screen.getByText(/past its due date/)
-    ).toBeInTheDocument();
-  });
-
-  it("does not show overdue hint when remaining amount is 0", () => {
-    const paidDebt = {
-      ...validDebt,
-      dueDate: "2024-01-01",
-      remainingAmount: 0,
-    };
-    mockUseDebt.mockReturnValue({ data: paidDebt, isLoading: false });
-    mockUseRepayments.mockReturnValue({ data: [], isLoading: false });
-    render(<DebtDetail debtId="d1" />);
-    expect(
-      screen.queryByText(/past its due date/)
-    ).toBeNull();
+    expect(screen.getByText("View cycle detail")).toBeInTheDocument();
   });
 });

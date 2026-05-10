@@ -1,5 +1,6 @@
 import type { Account } from "@/domain/account/types";
 import type { Debt, DebtRepayment } from "@/domain/debt/types";
+import type { DebtCycle } from "@/domain/debt/cycle";
 import type { Transaction } from "@/domain/transaction/types";
 
 export const mockPeople = [
@@ -173,4 +174,15 @@ export const mockRepayments: DebtRepayment[] = [
     updatedAt: "2025-03-30T00:00:00Z",
   },
   // d2 has no repayments — tests empty state
+];
+
+export const mockCycles: DebtCycle[] = [
+  {
+    id: "c1",
+    debtId: "d1",
+    label: "2025-03",
+    amount: 500,
+    createdAt: "2025-03-01T00:00:00Z",
+    updatedAt: "2025-03-01T00:00:00Z",
+  },
 ];
