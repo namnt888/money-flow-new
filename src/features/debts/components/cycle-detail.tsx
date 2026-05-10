@@ -8,9 +8,9 @@ import { formatCurrency } from "@/lib/format";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-export function CycleDetail({ debtId }: { debtId: string }) {
+export function CycleDetail({ debtId, cycleId }: { debtId: string; cycleId: string }) {
   const { data: debt, isLoading: isDebtLoading } = useDebt(debtId);
-  const { data: cycle, isLoading: isCycleLoading } = useCycle(debtId);
+  const { data: cycle, isLoading: isCycleLoading } = useCycle(cycleId);
 
   const isLoading = isDebtLoading || isCycleLoading;
 
@@ -50,9 +50,20 @@ export function CycleDetail({ debtId }: { debtId: string }) {
       {/* Cycle header */}
       <div className="space-y-3">
         <h2 className="text-2xl font-bold">Cycle Detail</h2>
-        <p className="text-muted-foreground">
-          {debt.personName} — {debt.description}
-        </p>
+        <div className="flex flex-col gap-1">
+          <p className="text-lg font-medium">{debt.personName}</p>
+          <p className="text-muted-foreground">{debt.description}</p>
+        </div>
+        <div className="flex gap-6 pt-2 text-sm">
+          <div>
+            <span className="text-muted-foreground">Original Debt: </span>
+            <span className="font-medium">{formatCurrency(debt.amount)}</span>
+          </div>
+          <div>
+            <span className="text-muted-foreground">Total Remaining: </span>
+            <span className="text-destructive font-medium">{formatCurrency(debt.remainingAmount)}</span>
+          </div>
+        </div>
       </div>
 
       {/* Cycle summary */}

@@ -3,13 +3,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { cycleRepository } from "@/data/repositories/mock";
 
-export function useCycle(debtId: string) {
+export function useCycle(cycleId: string) {
   return useQuery({
-    queryKey: ["cycle", debtId],
+    queryKey: ["cycle", cycleId],
     queryFn: async () => {
-      const all = await cycleRepository.getAll();
-      return all.find((c) => c.debtId === debtId) ?? null;
+      return cycleRepository.getById(cycleId);
     },
-    enabled: !!debtId,
+    enabled: !!cycleId,
   });
 }
