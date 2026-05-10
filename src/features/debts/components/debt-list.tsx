@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useDebts } from "@/features/debts/hooks/use-debts";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -38,8 +39,9 @@ export function DebtList() {
   return (
     <div className="space-y-3">
       {debts.map((debt) => (
-        <div
+        <Link
           key={debt.id}
+          href={`/debts/${debt.id}`}
           className="flex flex-col gap-2 rounded-lg border bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center sm:justify-between"
         >
           <div className="space-y-1">
@@ -61,7 +63,7 @@ export function DebtList() {
               </p>
             )}
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );
