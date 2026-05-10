@@ -29,3 +29,10 @@ export interface UpdateDebtInput {
   interestRate?: number;
   dueDate?: string;
 }
+
+export interface DebtRepayment extends BaseEntity {
+  debtId: string;
+  date: string;
+  amount: number;
+  note?: string;
+}

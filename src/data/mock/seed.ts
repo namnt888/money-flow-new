@@ -1,5 +1,5 @@
 import type { Account } from "@/domain/account/types";
-import type { Debt } from "@/domain/debt/types";
+import type { Debt, DebtRepayment } from "@/domain/debt/types";
 import type { Transaction } from "@/domain/transaction/types";
 
 export const mockPeople = [
@@ -134,4 +134,37 @@ export const mockTransactions: Transaction[] = [
     createdAt: "2025-05-05T00:00:00Z",
     updatedAt: "2025-05-05T00:00:00Z",
   },
+];
+
+export const mockRepayments: DebtRepayment[] = [
+  // d1 (active/partial) — 2 repayments, newest first
+  {
+    id: "r1",
+    debtId: "d1",
+    date: "2025-03-15",
+    amount: 300.00,
+    note: "First partial payment",
+    createdAt: "2025-03-15T00:00:00Z",
+    updatedAt: "2025-03-15T00:00:00Z",
+  },
+  {
+    id: "r2",
+    debtId: "d1",
+    date: "2025-01-20",
+    amount: 200.00,
+    note: "Initial payment",
+    createdAt: "2025-01-20T00:00:00Z",
+    updatedAt: "2025-01-20T00:00:00Z",
+  },
+  // d3 (paid) — 1 final repayment
+  {
+    id: "r3",
+    debtId: "d3",
+    date: "2025-03-30",
+    amount: 5000.00,
+    note: "Final settlement",
+    createdAt: "2025-03-30T00:00:00Z",
+    updatedAt: "2025-03-30T00:00:00Z",
+  },
+  // d2 has no repayments — tests empty state
 ];
