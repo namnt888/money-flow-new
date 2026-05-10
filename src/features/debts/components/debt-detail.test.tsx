@@ -30,6 +30,8 @@ const validDebt = {
   personName: "Alice Johnson",
   description: "Personal loan",
   amount: 2000,
+  cashback: 50,
+  finalPrice: 1950,
   remainingAmount: 1500,
   interestRate: 5.5,
   dueDate: "2025-12-31",
@@ -83,7 +85,7 @@ describe("DebtDetail", () => {
     expect(screen.getByText("Alice Johnson")).toBeInTheDocument();
     expect(screen.getByText("Active")).toBeInTheDocument();
     expect(screen.getByText("Personal loan")).toBeInTheDocument();
-    expect(screen.getByText("$2000.00")).toBeInTheDocument();
+    expect(screen.getByText("2000.00")).toBeInTheDocument();
     expect(screen.getByText("Due: 2025-12-31")).toBeInTheDocument();
   });
 
@@ -102,7 +104,7 @@ describe("DebtDetail", () => {
     mockUseRepayments.mockReturnValue({ data: mockRepayments, isLoading: false });
     render(<DebtDetail debtId="d1" />);
     // 2000 - 1500 = 500
-    expect(screen.getByText("$500.00")).toBeInTheDocument();
+    expect(screen.getByText("500.00")).toBeInTheDocument();
   });
 
   it("shows activity items when repayments exist", () => {

@@ -70,18 +70,26 @@ export function DebtDetail({ debtId }: { debtId: string }) {
           {debt.status.charAt(0).toUpperCase() + debt.status.slice(1)}
         </Badge>
         <p className="text-muted-foreground">{debt.description}</p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2">
-          <div>
-            <span className="text-sm text-muted-foreground">Total</span>
-            <p className="text-lg font-semibold">{formatCurrency(debt.amount)}</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 pt-4 border-t">
+          <div className="pt-3">
+            <span className="text-xs text-muted-foreground">Original</span>
+            <p className="text-lg font-semibold text-muted-foreground">{formatCurrency(debt.amount)}</p>
           </div>
-          <div>
-            <span className="text-sm text-muted-foreground">Remaining</span>
-            <p className="text-lg font-semibold">{formatCurrency(debt.remainingAmount)}</p>
+          <div className="pt-3">
+            <span className="text-xs text-muted-foreground">Cashback Back</span>
+            <p className="text-lg font-semibold text-blue-600">{formatCurrency(debt.cashback ?? 0)}</p>
           </div>
-          <div>
-            <span className="text-sm text-muted-foreground">Repaid</span>
-            <p className="text-lg font-semibold">{formatCurrency(repaidAmount)}</p>
+          <div className="pt-3">
+            <span className="text-xs text-muted-foreground">Final Price</span>
+            <p className="text-lg font-semibold">{formatCurrency(debt.finalPrice ?? debt.amount)}</p>
+          </div>
+          <div className="pt-3">
+            <span className="text-xs text-muted-foreground">Repaid</span>
+            <p className="text-lg font-semibold text-green-600">{formatCurrency(repaidAmount)}</p>
+          </div>
+          <div className="pt-3">
+            <span className="text-xs text-muted-foreground">Remaining</span>
+            <p className="text-lg font-semibold text-destructive">{formatCurrency(debt.remainingAmount)}</p>
           </div>
         </div>
         {debt.dueDate && (
