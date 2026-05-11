@@ -9,6 +9,13 @@ import { ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Debt } from "@/domain/debt/types";
+import type { DebtCycle } from "@/domain/debt/cycle";
+
+const DEFAULT_VISIBLE_CYCLES = 3;
+
+function getSortedCycles(cycles: DebtCycle[]): DebtCycle[] {
+  return [...cycles].sort((a, b) => b.label.localeCompare(a.label));
+}
 
 function DebtNavItem({
   debt,
@@ -35,6 +42,28 @@ function DebtNavItem({
     prevActive.current = isActive;
   }, [isActive]);
 
+  // Find active cycle index to ensure it stays visible
+  const sortedCycles = cycles ? getSortedCycles(cycles) : [];
+  const activeCycleId = sortedCycles.find((c) =>
+    pathname === `/debts/${debt.id}/cycles/${c.id}`
+  )?.id;
+  const activeCycleIndex = activeCycleId
+    ? sortedCycles.findIndex((c) => c.id === activeCycleId)
+    : -1;
+
+  const initialVisibleCount = Math.max(
+    DEFAULT_VISIBLE_CYCLES,
+    activeCycleIndex >= 0 ? activeCycleIndex + 1 : DEFAULT_VISIBLE_CYCLES
+  );
+
+  const [showAll, setShowAll] = useState(
+    sortedCycles.length <= initialVisibleCount
+  );
+  const visibleCycles = showAll
+    ? sortedCycles
+    : sortedCycles.slice(0, DEFAULT_VISIBLE_CYCLES);
+  const hiddenCount = sortedCycles.length - (showAll ? 0 : DEFAULT_VISIBLE_CYCLES);
+
   return (
     <li>
       <div className="flex items-center gap-0">
@@ -59,17 +88,18 @@ function DebtNavItem({
             />
           </button>
         )}
+        {!hasCycles && <span className="w-5 shrink-0" />}
         <Link
           href={`/debts/${debt.id}`}
           onClick={onNavigate}
           className={cn(
-            "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors flex-1",
+            "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors flex-1 min-w-0",
             isActive
               ? "bg-accent text-accent-foreground font-medium"
               : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
           )}
         >
-          {debt.personName}
+          <span className="truncate">{debt.personName}</span>
         </Link>
       </div>
 
@@ -82,7 +112,7 @@ function DebtNavItem({
             </div>
           ) : hasCycles ? (
             <ul className="space-y-0.5">
-              {cycles.map((cycle) => {
+              {visibleCycles.map((cycle) => {
                 const isThisCycleActive =
                   pathname === `/debts/${debt.id}/cycles/${cycle.id}`;
                 return (
@@ -102,6 +132,28 @@ function DebtNavItem({
                   </li>
                 );
               })}
+              {!showAll && hiddenCount > 0 && (
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => setShowAll(true)}
+                    className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors w-full text-left"
+                  >
+                    Show {hiddenCount} more
+                  </button>
+                </li>
+              )}
+              {showAll && sortedCycles.length > DEFAULT_VISIBLE_CYCLES && (
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => setShowAll(false)}
+                    className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors w-full text-left"
+                  >
+                    Show less
+                  </button>
+                </li>
+              )}
             </ul>
           ) : (
             <p className="px-2 py-1 text-xs text-muted-foreground">
