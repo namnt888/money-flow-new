@@ -64,16 +64,19 @@ describe("CycleRowsTable", () => {
     expect(shopCells.length).toBeGreaterThanOrEqual(1);
     const shopeeCells = screen.getAllByText("Shopee");
     expect(shopeeCells.length).toBeGreaterThanOrEqual(1);
-    const amountCells = screen.getAllByText("58485.00");
+    const amountCells = screen.getAllByText("58,485");
     expect(amountCells.length).toBeGreaterThanOrEqual(1);
-    const amount50000 = screen.getAllByText("50000.00");
+    const amount50000 = screen.getAllByText("50,000");
     expect(amount50000.length).toBeGreaterThanOrEqual(1);
-    const cbCells = screen.getAllByText("2500.00");
+    const cbCells = screen.getAllByText("2,500");
     expect(cbCells.length).toBeGreaterThanOrEqual(1);
-    const fpCells = screen.getAllByText("47500.00");
+    const fpCells = screen.getAllByText("47,500");
     expect(fpCells.length).toBeGreaterThanOrEqual(1);
-    const zeroPctCells = screen.getAllByText("0%");
-    expect(zeroPctCells.length).toBeGreaterThanOrEqual(1);
+    
+    // 0% and 0.00 should be hidden (blank in table, "-" in mobile cards)
+    expect(screen.queryByText("0%")).toBeNull();
+    const dashCells = screen.getAllByText("-");
+    expect(dashCells.length).toBeGreaterThanOrEqual(2); // One for % Back, one for đ Back in mobile view for the first row
   });
 
   it("shows empty state when no rows", () => {
