@@ -42,7 +42,6 @@ function DebtNavItem({
     prevActive.current = isActive;
   }, [isActive]);
 
-  // Find active cycle index to ensure it stays visible
   const sortedCycles = cycles ? getSortedCycles(cycles) : [];
   const activeCycleId = sortedCycles.find((c) =>
     pathname === `/debts/${debt.id}/cycles/${c.id}`
@@ -51,18 +50,19 @@ function DebtNavItem({
     ? sortedCycles.findIndex((c) => c.id === activeCycleId)
     : -1;
 
-  const initialVisibleCount = Math.max(
+  // Show enough cycles to cover the active one + default count
+  const minVisibleCount = Math.max(
     DEFAULT_VISIBLE_CYCLES,
-    activeCycleIndex >= 0 ? activeCycleIndex + 1 : DEFAULT_VISIBLE_CYCLES
+    activeCycleIndex >= 0 ? activeCycleIndex + 1 : 0
   );
 
   const [showAll, setShowAll] = useState(
-    sortedCycles.length <= initialVisibleCount
+    sortedCycles.length <= minVisibleCount
   );
   const visibleCycles = showAll
     ? sortedCycles
-    : sortedCycles.slice(0, DEFAULT_VISIBLE_CYCLES);
-  const hiddenCount = sortedCycles.length - (showAll ? 0 : DEFAULT_VISIBLE_CYCLES);
+    : sortedCycles.slice(0, minVisibleCount);
+  const hiddenCount = sortedCycles.length - (showAll ? 0 : minVisibleCount);
 
   return (
     <li>
