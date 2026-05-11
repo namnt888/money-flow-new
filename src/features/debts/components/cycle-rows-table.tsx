@@ -1,8 +1,9 @@
 "use client";
 
 import type { CycleRow } from "@/domain/debt/cycle-row";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency, formatPercent } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface CycleRowsTableProps {
   rows: CycleRow[];
@@ -15,42 +16,55 @@ export function CycleRowsTable({ rows }: CycleRowsTableProps) {
     );
   }
 
+  const thClass = "pb-2 px-3 font-semibold text-xs uppercase tracking-wider border-r last:border-r-0 border-muted/50";
+  const tdClass = "py-2.5 px-3 border-r last:border-r-0 border-muted/30";
+
   return (
-    <div>
+    <div className="rounded-md border bg-card">
       {/* Desktop table */}
       <div className="hidden sm:block overflow-x-auto">
-        <table className="w-full text-sm whitespace-nowrap">
-          <thead>
-            <tr className="border-b text-left text-muted-foreground">
-              <th className="pb-2 pr-3 font-medium">ID</th>
-              <th className="pb-2 pr-3 font-medium">Type</th>
-              <th className="pb-2 pr-3 font-medium">Date</th>
-              <th className="pb-2 pr-3 font-medium">Shop</th>
-              <th className="pb-2 pr-3 font-medium">Notes</th>
-              <th className="pb-2 pr-3 text-right font-medium">Amount</th>
-              <th className="pb-2 pr-3 font-medium">% Back</th>
-              <th className="pb-2 pr-3 text-right font-medium">đ Back</th>
-              <th className="pb-2 pr-3 text-right font-medium">Σ Back</th>
-              <th className="pb-2 pr-3 text-right font-medium">Final Price</th>
-              <th className="pb-2 font-medium">Source</th>
+        <table className="w-full text-sm whitespace-nowrap border-collapse">
+          <thead className="bg-muted/30">
+            <tr className="text-left text-muted-foreground">
+              <th className={cn(thClass, "pl-4")}>ID</th>
+              <th className={thClass}>Type</th>
+              <th className={thClass}>Date</th>
+              <th className={thClass}>Shop</th>
+              <th className={thClass}>Notes</th>
+              <th className={cn(thClass, "text-right")}>Amount</th>
+              <th className={cn(thClass, "text-center")}>% Back</th>
+              <th className={cn(thClass, "text-right")}>đ Back</th>
+              <th className={cn(thClass, "text-right")}>Σ Back</th>
+              <th className={cn(thClass, "text-right")}>Final Price</th>
+              <th className={cn(thClass, "pr-4")}>Source</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={row.id} className="border-b last:border-0">
-                <td className="py-2 pr-3 text-xs text-muted-foreground">{shortId(row.id)}</td>
-                <td className="py-2 pr-3">{typeBadge(row.type)}</td>
-                <td className="py-2 pr-3">{row.date}</td>
-                <td className="py-2 pr-3 font-medium">{row.shop}</td>
-                <td className="py-2 pr-3 max-w-[200px] truncate text-muted-foreground" title={row.notes}>
+              <tr key={row.id} className="border-b last:border-0 hover:bg-muted/20 transition-colors">
+                <td className={cn(tdClass, "pl-4 text-xs text-muted-foreground font-mono")}>{shortId(row.id)}</td>
+                <td className={tdClass}>{typeBadge(row.type)}</td>
+                <td className={cn(tdClass, "text-muted-foreground")}>{row.date}</td>
+                <td className={cn(tdClass, "font-medium text-foreground")}>{row.shop}</td>
+                <td className={cn(tdClass, "max-w-[200px] truncate text-muted-foreground text-xs")} title={row.notes}>
                   {row.notes}
                 </td>
-                <td className="py-2 pr-3 text-right">{formatCurrency(row.amount)}</td>
-                <td className="py-2 pr-3">{formatPercent(row.percentBack)}</td>
-                <td className="py-2 pr-3 text-right">{formatCurrency(row.cashbackAmount)}</td>
-                <td className="py-2 pr-3 text-right font-semibold">{formatCurrency(row.cumulativeBack)}</td>
-                <td className="py-2 pr-3 text-right">{formatCurrency(row.finalPrice)}</td>
-                <td className="py-2 text-xs text-muted-foreground">{row.shopSource}</td>
+                <td className={cn(tdClass, "text-right font-mono")}>
+                  {formatCurrency(row.amount)}
+                </td>
+                <td className={cn(tdClass, "text-center text-muted-foreground")}>
+                  {formatPercent(row.percentBack, { blankZero: true })}
+                </td>
+                <td className={cn(tdClass, "text-right text-muted-foreground")}>
+                  {formatCurrency(row.cashbackAmount, { blankZero: true })}
+                </td>
+                <td className={cn(tdClass, "text-right font-semibold text-primary")}>
+                  {formatCurrency(row.cumulativeBack)}
+                </td>
+                <td className={cn(tdClass, "text-right font-mono")}>
+                  {formatCurrency(row.finalPrice)}
+                </td>
+                <td className={cn(tdClass, "pr-4 text-xs text-muted-foreground italic")}>{row.shopSource}</td>
               </tr>
             ))}
           </tbody>
@@ -58,42 +72,48 @@ export function CycleRowsTable({ rows }: CycleRowsTableProps) {
       </div>
 
       {/* Mobile cards */}
-      <div className="sm:hidden space-y-3">
+      <div className="sm:hidden divide-y">
         {rows.map((row) => (
-          <div key={row.id} className="border rounded-lg p-3 space-y-2">
+          <div key={row.id} className="p-4 space-y-3 hover:bg-muted/10 transition-colors">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">{shortId(row.id)}</span>
+                <span className="text-[10px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">{shortId(row.id)}</span>
                 {typeBadge(row.type)}
               </div>
-              <span className="font-semibold">{formatCurrency(row.amount)}</span>
+              <span className="font-bold text-base">{formatCurrency(row.amount)}</span>
             </div>
+            
             <div className="flex items-center justify-between">
-              <span className="font-medium">{row.shop}</span>
-              <span className="text-sm text-muted-foreground">{row.date}</span>
+              <span className="font-semibold text-foreground">{row.shop}</span>
+              <span className="text-xs text-muted-foreground">{row.date}</span>
             </div>
+            
             {row.notes && (
-              <p className="text-xs text-muted-foreground truncate">{row.notes}</p>
+              <p className="text-xs text-muted-foreground line-clamp-1 italic bg-muted/20 p-1.5 rounded">{row.notes}</p>
             )}
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div>
-                <span className="text-muted-foreground">% Back: </span>
-                {formatPercent(row.percentBack)}
+            
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs border-t pt-2 mt-2">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">% Back:</span>
+                <span className="font-medium">{formatPercent(row.percentBack, { blankZero: true }) || "-"}</span>
               </div>
-              <div className="text-right">
-                <span className="text-muted-foreground">đ Back: </span>
-                {formatCurrency(row.cashbackAmount)}
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">đ Back:</span>
+                <span className="font-medium">{formatCurrency(row.cashbackAmount, { blankZero: true }) || "-"}</span>
               </div>
-              <div>
-                <span className="text-muted-foreground">Σ Back: </span>
-                <span className="font-semibold">{formatCurrency(row.cumulativeBack)}</span>
+              <div className="flex justify-between col-span-2 bg-primary/5 p-2 rounded border border-primary/10">
+                <span className="text-muted-foreground font-medium">Σ Back Total:</span>
+                <span className="font-bold text-primary">{formatCurrency(row.cumulativeBack)}</span>
               </div>
-              <div className="text-right">
-                <span className="text-muted-foreground">Final: </span>
-                {formatCurrency(row.finalPrice)}
+              <div className="flex justify-between col-span-2 pt-1">
+                <span className="text-muted-foreground">Final Price:</span>
+                <span className="font-semibold">{formatCurrency(row.finalPrice)}</span>
               </div>
             </div>
-            <div className="text-xs text-muted-foreground">Source: {row.shopSource}</div>
+            <div className="text-[10px] text-muted-foreground flex items-center gap-1.5">
+              <span className="uppercase font-bold tracking-tighter opacity-50">Source:</span>
+              {row.shopSource}
+            </div>
           </div>
         ))}
       </div>
@@ -102,20 +122,15 @@ export function CycleRowsTable({ rows }: CycleRowsTableProps) {
 }
 
 function shortId(id: string): string {
-  return id.length > 6 ? id.slice(0, 6) + "…" : id;
-}
-
-function formatPercent(value: number): string {
-  if (value === 0) return "0%";
-  return `${value.toFixed(2)}%`;
+  return id.length > 6 ? id.slice(0, 6) : id;
 }
 
 function typeBadge(type: string) {
   if (type === "In") {
-    return <Badge className="bg-green-600 hover:bg-green-600">{type}</Badge>;
+    return <Badge className="bg-green-600/90 hover:bg-green-600 font-bold text-[10px] h-5">{type}</Badge>;
   }
   if (type === "Out") {
-    return <Badge variant="destructive">{type}</Badge>;
+    return <Badge variant="destructive" className="font-bold text-[10px] h-5">{type}</Badge>;
   }
-  return <Badge variant="outline">{type}</Badge>;
+  return <Badge variant="outline" className="font-bold text-[10px] h-5">{type}</Badge>;
 }
