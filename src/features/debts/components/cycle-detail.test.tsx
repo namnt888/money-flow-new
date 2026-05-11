@@ -80,7 +80,7 @@ describe("CycleDetail", () => {
     expect(screen.getByText("Cycle Detail")).toBeInTheDocument();
     expect(screen.getByText((c) => c.includes("Alice Johnson"))).toBeInTheDocument();
     expect(screen.getByText("2025-03")).toBeInTheDocument();
-    const amountCells = screen.getAllByText("500.00");
+    const amountCells = screen.getAllByText("500");
     expect(amountCells.length).toBeGreaterThanOrEqual(1);
   });
 
@@ -103,7 +103,7 @@ describe("CycleDetail", () => {
     mockUseDebt.mockReturnValue({ data: validDebt, isLoading: false });
     mockUseCycle.mockReturnValue({ data: validCycle, isLoading: false });
     render(<CycleDetail debtId="d1" cycleId="c1" />);
-    const remainingCells = screen.getAllByText("1500.00");
+    const remainingCells = screen.getAllByText("1,500");
     expect(remainingCells.length).toBeGreaterThanOrEqual(1);
   });
 
@@ -142,7 +142,7 @@ describe("CycleDetail", () => {
     render(<CycleDetail debtId="d1" cycleId="c1" />);
     const shopCells = screen.getAllByText("Youtube");
     expect(shopCells.length).toBeGreaterThanOrEqual(1);
-    const amountCells = screen.getAllByText("58485.00");
+    const amountCells = screen.getAllByText("58,485");
     expect(amountCells.length).toBeGreaterThanOrEqual(1);
   });
 

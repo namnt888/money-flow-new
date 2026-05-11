@@ -94,7 +94,7 @@ describe("DebtDetail", () => {
     expect(screen.getByText("Alice Johnson")).toBeInTheDocument();
     expect(screen.getByText("Active")).toBeInTheDocument();
     expect(screen.getByText("Personal loan")).toBeInTheDocument();
-    expect(screen.getByText("2000.00")).toBeInTheDocument();
+    expect(screen.getByText("2,000")).toBeInTheDocument();
   });
 
   it("no longer shows due date or overdue hint", () => {
@@ -112,7 +112,7 @@ describe("DebtDetail", () => {
     mockUseCycles.mockReturnValue({ data: [], isLoading: false });
     render(<DebtDetail debtId="d1" />);
     // 2000 - 1500 = 500
-    expect(screen.getByText("500.00")).toBeInTheDocument();
+    expect(screen.getByText("500")).toBeInTheDocument();
   });
 
   it("shows activity items when repayments exist", () => {
