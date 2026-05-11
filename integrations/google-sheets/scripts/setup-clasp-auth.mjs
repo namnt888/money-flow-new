@@ -16,19 +16,13 @@ import dotenv from 'dotenv'
 
 dotenv.config({ path: join(dirname(fileURLToPath(import.meta.url)), '../../.env.local') })
 
-const PEOPLE_SYNC_DIR = join(dirname(fileURLToPath(import.meta.url)), 'people-sync')
-const BATCH_SYNC_DIR = join(dirname(fileURLToPath(import.meta.url)), 'batch-sync')
+const GS_INTEGRATION_DIR = join(dirname(fileURLToPath(import.meta.url)), '..')
 
 const PROJECTS = [
   {
-    name: 'people-sync',
-    path: PEOPLE_SYNC_DIR,
-    description: 'Google Sheets Scripts for People/Members'
-  },
-  {
-    name: 'batch-sync',
-    path: BATCH_SYNC_DIR,
-    description: 'Google Sheets Scripts for Batch Management'
+    name: 'google-sheets',
+    path: GS_INTEGRATION_DIR,
+    description: 'Main MoneyFlow Google Sheets Integration'
   }
 ]
 
@@ -111,7 +105,7 @@ async function main() {
   console.log('   4. Other developers: run this script after cloning\n')
 
   console.log('🧪 To test:')
-  console.log('   cd integrations/google-sheets/people-sync')
+  console.log('   cd integrations/google-sheets')
   console.log('   npx clasp push --force\n')
 }
 

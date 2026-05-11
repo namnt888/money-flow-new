@@ -6,8 +6,9 @@ import { spawnSync } from 'node:child_process'
 import dotenv from 'dotenv'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const claspPath = join(__dirname, '.clasp.json')
-const repoRoot = join(__dirname, '..', '..', '..')
+const projectDir = join(__dirname, '..')
+const claspPath = join(projectDir, '.clasp.json')
+const repoRoot = join(projectDir, '..', '..')
 const homeDir = process.env.HOME || process.env.USERPROFILE
 const globalClasprcPath = join(homeDir, '.clasprc.json')
 const expectedClaspEmail = (process.env.CLASP_EMAIL || 'namnt05@gmail.com').trim().toLowerCase()
@@ -313,7 +314,7 @@ const main = async () => {
 
         const claspCmd = process.platform === 'win32' ? 'clasp.cmd' : 'clasp'
         let result = spawnSync(claspCmd, pushArgs, {
-          cwd: __dirname,
+          cwd: projectDir,
           stdio: 'inherit',
           shell: useShell,
         })
@@ -334,7 +335,7 @@ const main = async () => {
               '--deploymentId', deployId,
               '--description', 'Auto-updated_via_script'
             ], {
-              cwd: __dirname,
+              cwd: projectDir,
               stdio: 'inherit',
               shell: useShell,
             })
@@ -369,7 +370,7 @@ const main = async () => {
             if (loginResult.status === 0) {
               console.log(`Retrying push for ${profile.key}...`)
               result = spawnSync(claspCmd, pushArgs, {
-                cwd: __dirname,
+                cwd: projectDir,
                 stdio: 'inherit',
                 shell: useShell,
               })
@@ -388,7 +389,7 @@ const main = async () => {
                     '--deploymentId', deployId,
                     '--description', 'Auto-updated_via_script_and_retry'
                   ], {
-                    cwd: __dirname,
+                    cwd: projectDir,
                     stdio: 'inherit',
                     shell: useShell,
                   })
@@ -467,7 +468,7 @@ const main = async () => {
       if (loginResult.status === 0) {
         console.log(`Retrying push...`)
         result = spawnSync(claspCmd, pushArgs, {
-          cwd: __dirname,
+          cwd: projectDir,
           stdio: 'inherit',
           shell: useShell,
         })
@@ -501,7 +502,7 @@ const main = async () => {
           '--deploymentId', deployId,
           '--description', 'Auto-updated_via_script'
         ], {
-          cwd: __dirname,
+          cwd: projectDir,
           stdio: 'inherit',
           shell: useShell,
         })
