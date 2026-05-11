@@ -1,6 +1,6 @@
 "use client";
 
-import { DebtCycle } from "@/domain/debt/cycle";
+import type { DebtCycle } from "@/domain/debt/cycle";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/format";
 import Link from "next/link";

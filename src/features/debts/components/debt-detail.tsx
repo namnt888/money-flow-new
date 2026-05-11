@@ -7,9 +7,9 @@ import { DebtRepaymentList } from "./debt-repayment-list";
 import { useRepayments } from "@/features/debts/hooks/use-repayments";
 import { useCycles } from "@/features/debts/hooks/use-cycles";
 import { formatCurrency } from "@/lib/format";
+import { CycleCard } from "./cycle-card";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { CycleCard } from "./cycle-card";
 
 export function DebtDetail({ debtId }: { debtId: string }) {
   const { data: debt, isLoading } = useDebt(debtId);

@@ -27,6 +27,7 @@ const mockUseCycles = useCycles as ReturnType<typeof vi.fn>;
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockUseCycles.mockReturnValue({ data: [], isLoading: false });
 });
 
 const validDebt = {

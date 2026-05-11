@@ -1,8 +1,9 @@
 import type { Debt, DebtRepayment } from "@/domain/debt/types";
 import type { DebtCycle } from "@/domain/debt/cycle";
+import type { CycleRow } from "@/domain/debt/cycle-row";
 import type { Account } from "@/domain/account/types";
 import type { Transaction } from "@/domain/transaction/types";
-import { mockDebts, mockCycles, mockAccounts, mockTransactions, mockRepayments } from "../mock/seed";
+import { mockDebts, mockCycles, mockCycleRows, mockAccounts, mockTransactions, mockRepayments } from "../mock/seed";
 
 /** In‑memory repository – no persistence, suitable for UI prototyping */
 export class InMemoryRepository<T> {
@@ -45,6 +46,7 @@ export class InMemoryRepository<T> {
 export const debtRepository = new InMemoryRepository<Debt>(mockDebts);
 export const repaymentRepository = new InMemoryRepository<DebtRepayment>(mockRepayments);
 export const cycleRepository = new InMemoryRepository<DebtCycle>(mockCycles);
+export const cycleRowRepository = new InMemoryRepository<CycleRow>(mockCycleRows);
 
 export const accountRepository = new InMemoryRepository<Account>(mockAccounts);
 export const transactionRepository = new InMemoryRepository<Transaction>(mockTransactions);
