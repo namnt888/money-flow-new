@@ -78,12 +78,13 @@ export const sheetSyncAdapter = {
       amount: Math.abs(row.amount), // code.gs resolveAmountValue uses Math.abs
       shop: row.shopSource || row.shop || "",
       percent_back: row.percentBack,
-      // In our domain, cashbackAmount is usually the calculated total.
-      // But if it's purely a fixed amount (no percent), we map it to fixed_back.
-      // If there is both, code.gs formula calculates Total Back = (Amt * % / 100) + Fixed.
-      // For now, we prioritize sending percent_back if it exists, 
-      // and we could send fixed_back if we want to force a specific value.
-      // However, the simplest mapping is to send what we have.
+      /**
+       * CASHBACK MAPPING ASSUMPTION (v1):
+       * The adapter assumes a simplified mapping to match code.gs (v8.0) logic:
+       * 1. If percentBack > 0, we prioritize sending the percent to let the sheet calculate the value.
+       * 2. If percentBack is 0, we send cashbackAmount as fixed_back.
+       * 3. This assumes the domain does not currently use both percent and fixed back simultaneously.
+       */
       fixed_back: row.percentBack === 0 ? row.cashbackAmount : 0,
     };
   },

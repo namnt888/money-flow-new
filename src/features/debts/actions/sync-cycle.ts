@@ -32,8 +32,9 @@ export async function syncCycleToSheet(cycleId: string) {
       // In development/mock mode, we log the payload if URL is missing
       console.info("Sheet Sync Payload (Mock):", JSON.stringify(payload, null, 2));
       return { 
-        success: false, 
-        message: "GOOGLE_SHEET_WEBHOOK_URL not configured. Check console for payload.",
+        success: true, 
+        simulated: true,
+        message: "Simulated sync: GOOGLE_SHEET_WEBHOOK_URL not configured. Payload logged to console.",
         payload
       };
     }

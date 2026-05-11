@@ -24,6 +24,12 @@ The adapter (`src/features/debts/services/sheet-sync-adapter.ts`) generates a JS
 - `cycle_tag`: Maps to `DebtCycle.label` (formatted as `YYYY-MM`).
 - `rows`: Array of transaction rows with fields `id`, `type`, `date`, `notes`, `amount`, and `shop` (raw ShopSource).
 
+### Cashback Mapping Assumptions
+To align with the logic in `code.gs` (v8.0), the following assumptions are applied during mapping:
+1. **Percentage Priority**: If `percentBack > 0`, the adapter sends `percent_back` and sets `fixed_back` to `0`. The Google Sheet then calculates the absolute cashback value via formula.
+2. **Fixed Fallback**: If `percentBack` is `0`, the `cashbackAmount` is mapped to `fixed_back`.
+3. **Exclusive Usage**: The current implementation assumes that transactions do not use both percentage and fixed cashback simultaneously.
+
 ## Testing the Contract
 
 You can verify the mapping logic by running the unit tests:
