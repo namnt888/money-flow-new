@@ -13,7 +13,6 @@ vi.mock("@/features/debts/hooks/use-debt", () => ({
 vi.mock("@/features/debts/hooks/use-repayments", () => ({
   useRepayments: vi.fn(),
 }));
-
 vi.mock("@/features/debts/hooks/use-cycles", () => ({
   useCycles: vi.fn(),
 }));
@@ -72,6 +71,7 @@ describe("DebtDetail", () => {
   it("shows skeleton while loading debt", () => {
     mockUseDebt.mockReturnValue({ data: undefined, isLoading: true });
     mockUseRepayments.mockReturnValue({ data: undefined, isLoading: true });
+    mockUseCycles.mockReturnValue({ data: undefined, isLoading: true });
     render(<DebtDetail debtId="d1" />);
     const skeletons = document.querySelectorAll(".animate-pulse");
     expect(skeletons.length).toBeGreaterThanOrEqual(4);
@@ -80,6 +80,7 @@ describe("DebtDetail", () => {
   it("shows not-found when debt is null", () => {
     mockUseDebt.mockReturnValue({ data: null, isLoading: false });
     mockUseRepayments.mockReturnValue({ data: undefined, isLoading: false });
+    mockUseCycles.mockReturnValue({ data: undefined, isLoading: false });
     render(<DebtDetail debtId="d-none" />);
     expect(screen.getByText("Debt not found.")).toBeInTheDocument();
     expect(screen.getByText("Back to debts")).toBeInTheDocument();
@@ -88,6 +89,7 @@ describe("DebtDetail", () => {
   it("renders debt summary fields when data is available", () => {
     mockUseDebt.mockReturnValue({ data: validDebt, isLoading: false });
     mockUseRepayments.mockReturnValue({ data: mockRepayments, isLoading: false });
+    mockUseCycles.mockReturnValue({ data: [], isLoading: false });
     render(<DebtDetail debtId="d1" />);
     expect(screen.getByText("Alice Johnson")).toBeInTheDocument();
     expect(screen.getByText("Active")).toBeInTheDocument();
@@ -98,6 +100,7 @@ describe("DebtDetail", () => {
   it("no longer shows due date or overdue hint", () => {
     mockUseDebt.mockReturnValue({ data: validDebt, isLoading: false });
     mockUseRepayments.mockReturnValue({ data: [], isLoading: false });
+    mockUseCycles.mockReturnValue({ data: [], isLoading: false });
     render(<DebtDetail debtId="d1" />);
     expect(screen.queryByText(/Due:/)).toBeNull();
     expect(screen.queryByText(/past its due date/)).toBeNull();
@@ -106,6 +109,7 @@ describe("DebtDetail", () => {
   it("shows repaid amount derived from total minus remaining", () => {
     mockUseDebt.mockReturnValue({ data: validDebt, isLoading: false });
     mockUseRepayments.mockReturnValue({ data: mockRepayments, isLoading: false });
+    mockUseCycles.mockReturnValue({ data: [], isLoading: false });
     render(<DebtDetail debtId="d1" />);
     // 2000 - 1500 = 500
     expect(screen.getByText("500.00")).toBeInTheDocument();
@@ -114,6 +118,7 @@ describe("DebtDetail", () => {
   it("shows activity items when repayments exist", () => {
     mockUseDebt.mockReturnValue({ data: validDebt, isLoading: false });
     mockUseRepayments.mockReturnValue({ data: mockRepayments, isLoading: false });
+    mockUseCycles.mockReturnValue({ data: [], isLoading: false });
     render(<DebtDetail debtId="d1" />);
     expect(screen.getByText("2025-03-15")).toBeInTheDocument();
     expect(screen.getByText("Partial payment")).toBeInTheDocument();
@@ -124,6 +129,7 @@ describe("DebtDetail", () => {
   it("shows empty message when no activity", () => {
     mockUseDebt.mockReturnValue({ data: validDebt, isLoading: false });
     mockUseRepayments.mockReturnValue({ data: [], isLoading: false });
+    mockUseCycles.mockReturnValue({ data: [], isLoading: false });
     render(<DebtDetail debtId="d1" />);
     expect(screen.getByText("No repayment activity yet.")).toBeInTheDocument();
   });
@@ -131,16 +137,24 @@ describe("DebtDetail", () => {
   it("shows activity skeleton while loading repayments", () => {
     mockUseDebt.mockReturnValue({ data: validDebt, isLoading: false });
     mockUseRepayments.mockReturnValue({ data: undefined, isLoading: true });
+    mockUseCycles.mockReturnValue({ data: [], isLoading: false });
     render(<DebtDetail debtId="d1" />);
     const skeletons = document.querySelectorAll(".animate-pulse");
     // Should have at least the 2 repayment skeletons
     expect(skeletons.length).toBeGreaterThanOrEqual(2);
   });
 
-  it("shows cycle link from debt detail", () => {
+  it("shows cycles section with multiple cycles", () => {
+    const mockCycles = [
+      { id: "c1", debtId: "d1", label: "2025-03", amount: 500 },
+      { id: "c2", debtId: "d1", label: "2025-04", amount: 500 },
+    ];
     mockUseDebt.mockReturnValue({ data: validDebt, isLoading: false });
     mockUseRepayments.mockReturnValue({ data: [], isLoading: false });
+    mockUseCycles.mockReturnValue({ data: mockCycles, isLoading: false });
     render(<DebtDetail debtId="d1" />);
     expect(screen.getByText("Cycles")).toBeInTheDocument();
+    expect(screen.getByText("2025-03")).toBeInTheDocument();
+    expect(screen.getByText("2025-04")).toBeInTheDocument();
   });
 });
