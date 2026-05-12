@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Calculator } from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
   Sheet,
   SheetContent,
@@ -64,8 +65,14 @@ export function AddTransactionSheet({ cycleId }: AddTransactionSheetProps) {
     const percentBack = Number(watched.percentBack) || 0;
     const cashbackAmount = Number(watched.cashbackAmount) || 0;
     if (amount <= 0) return null;
-    return computeDerivedValues({ amount, percentBack, cashbackAmount });
+    const derived = computeDerivedValues({ amount, percentBack, cashbackAmount });
+    const exceeds = derived.totalBack > amount;
+    return { ...derived, exceeds };
   }, [watched.amount, watched.percentBack, watched.cashbackAmount]);
+
+  const refineError =
+    errors.cashbackAmount?.message?.includes("exceed") ||
+    (errors.root as Record<string, { message: string } | undefined> | undefined)?.cashbackAmount?.message;
 
   const handleFormSubmit = async (data: AddTransactionFormValues) => {
     await addRow.mutateAsync({ ...data, cycleId });
@@ -191,7 +198,7 @@ export function AddTransactionSheet({ cycleId }: AddTransactionSheetProps) {
 
           {/* Live preview */}
           {preview && (
-            <div className="rounded-md border bg-primary/5 p-4 space-y-2">
+            <div className="rounded-md border p-4 space-y-2">
               <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 <Calculator className="h-3.5 w-3.5" />
                 Summary
@@ -203,14 +210,30 @@ export function AddTransactionSheet({ cycleId }: AddTransactionSheetProps) {
                 </div>
                 <div>
                   <span className="text-xs text-muted-foreground">Total Back</span>
-                  <p className="font-semibold text-blue-600">{formatCurrency(preview.totalBack)}</p>
+                  <p className={cn("font-semibold", preview.exceeds ? "text-destructive" : "text-blue-600")}>
+                    {formatCurrency(preview.totalBack)}
+                  </p>
                 </div>
                 <div>
                   <span className="text-xs text-muted-foreground">Final Price</span>
-                  <p className="font-bold text-lg">{formatCurrency(preview.finalPrice)}</p>
+                  <p className={cn("font-bold text-lg", preview.finalPrice < 0 ? "text-destructive" : "")}>
+                    {formatCurrency(preview.finalPrice)}
+                  </p>
                 </div>
               </div>
+              {preview.exceeds && (
+                <p className="text-xs text-destructive font-medium pt-1 border-t border-destructive/20 mt-1">
+                  Total cashback exceeds amount — fix cashback values before submitting
+                </p>
+              )}
             </div>
+          )}
+
+          {/* Form-level validation errors */}
+          {refineError && (
+            <p className="text-xs text-destructive text-center bg-destructive/5 p-2 rounded-md">
+              {refineError}
+            </p>
           )}
 
           {/* Submit / Cancel */}
