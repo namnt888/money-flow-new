@@ -31,9 +31,9 @@ export async function syncCycleToSheet(cycleId: string) {
     if (!webhookUrl) {
       // In development/mock mode, we log the payload if URL is missing
       console.info("Sheet Sync Payload (Mock):", JSON.stringify(payload, null, 2));
-      return { 
-        success: true, 
-        simulated: true,
+      return {
+        success: true,
+        mode: "simulated" as const,
         message: "Simulated sync: GOOGLE_SHEET_WEBHOOK_URL not configured. Payload logged to console.",
         payload
       };
@@ -57,16 +57,18 @@ export async function syncCycleToSheet(cycleId: string) {
     // 4. Revalidate cache
     revalidatePath(`/debts/${debt.id}/cycles/${cycleId}`);
     
-    return { 
-      success: true, 
+    return {
+      success: true,
+      mode: "real" as const,
       message: "Successfully synced to Google Sheets",
-      result 
+      result
     };
   } catch (error) {
     console.error("[syncCycleToSheet] Error:", error);
-    return { 
-      success: false, 
-      message: error instanceof Error ? error.message : "Unknown sync error" 
+    return {
+      success: false,
+      mode: "error" as const,
+      message: error instanceof Error ? error.message : "Unknown sync error"
     };
   }
 }
