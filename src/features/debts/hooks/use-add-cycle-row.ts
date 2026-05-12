@@ -30,14 +30,23 @@ export function useAddCycleRow() {
     mutationFn: async (input: AddCycleRowInput): Promise<CycleRow> => {
       const shopSource = input.shop;
 
-      const totalBack = input.percentBack > 0
-        ? Math.round(input.amount * input.percentBack) / 100
-        : input.cashbackAmount;
+      // cashbackAmount = computed value to send to sheet
+      // if percentBack > 0: derive from percentage
+      // else: use user-entered fixed value (defaults to 0)
+      const computedCashback =
+        input.percentBack > 0
+          ? Math.round(input.amount * input.percentBack) / 100
+          : input.cashbackAmount;
 
-      const cumulativeBack = totalBack;
-      const finalPrice = input.type === "In"
-        ? input.amount - cumulativeBack
-        : input.amount + cumulativeBack;
+      // finalPrice = amount - cashbackAmount (cashback always reduces effective cost)
+      const finalPrice = input.amount - computedCashback;
+
+      // cumulativeBack = running total of all cashbackAmount up to this row
+      const allRows = await cycleRowRepository.getAll();
+      const priorTotal = allRows
+        .filter((r) => r.cycleId === input.cycleId)
+        .reduce((sum, r) => sum + r.cashbackAmount, 0);
+      const cumulativeBack = priorTotal + computedCashback;
 
       const row: CycleRow = {
         id: generateId(),
@@ -48,7 +57,7 @@ export function useAddCycleRow() {
         notes: input.notes,
         amount: input.amount,
         percentBack: input.percentBack,
-        cashbackAmount: totalBack,
+        cashbackAmount: computedCashback,
         cumulativeBack,
         finalPrice,
         shopSource,

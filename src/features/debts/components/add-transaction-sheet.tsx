@@ -80,7 +80,7 @@ export function AddTransactionSheet({ cycleId }: AddTransactionSheetProps) {
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-1.5">
+        <Button variant="default" size="sm" className="gap-1.5">
           <Plus className="h-4 w-4" />
           Add Transaction
         </Button>
