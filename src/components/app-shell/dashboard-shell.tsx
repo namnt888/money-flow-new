@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { LayoutDashboard, CreditCard, Wallet, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { DebtNavTree } from "@/components/app-shell/debt-nav-tree";
 
 const navItems = [
   { href: "/", label: "Home", icon: LayoutDashboard },
@@ -37,7 +38,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           <ul className="space-y-2">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href;
+              const isActive =
+                item.href === "/"
+                  ? pathname === "/"
+                  : pathname.startsWith(item.href);
               return (
                 <li key={item.href}>
                   <Link
@@ -53,6 +57,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                     <Icon className="h-4 w-4" />
                     {item.label}
                   </Link>
+                  {item.href === "/debts" && (
+                    <div className="ml-2 mt-1">
+                      <DebtNavTree onNavigate={() => setMobileMenuOpen(false)} />
+                    </div>
+                  )}
                 </li>
               );
             })}
@@ -71,7 +80,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             <ul className="space-y-2">
               {navItems.slice(1).map((item) => {
                 const Icon = item.icon;
-                const isActive = pathname === item.href;
+                const isActive =
+                  pathname === item.href || pathname.startsWith(item.href + "/");
                 return (
                   <li key={item.href}>
                     <Link
@@ -86,6 +96,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                       <Icon className="h-4 w-4" />
                       {item.label}
                     </Link>
+                    {item.href === "/debts" && (
+                      <div className="ml-2 mt-1">
+                        <DebtNavTree />
+                      </div>
+                    )}
                   </li>
                 );
               })}
