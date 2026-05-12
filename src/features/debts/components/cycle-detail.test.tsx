@@ -18,6 +18,13 @@ vi.mock("@/features/debts/hooks/use-cycle-rows", () => ({
   useCycleRows: vi.fn(),
 }));
 
+vi.mock("@/features/debts/hooks/use-add-cycle-row", () => ({
+  useAddCycleRow: () => ({
+    mutateAsync: vi.fn(),
+    isError: false,
+  }),
+}));
+
 import { useDebt } from "@/features/debts/hooks/use-debt";
 import { useCycle } from "@/features/debts/hooks/use-cycle";
 import { useCycleRows } from "@/features/debts/hooks/use-cycle-rows";
