@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
+import { Plus, Calculator } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -18,8 +18,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
+import { formatCurrency } from "@/lib/format";
 import {
   addTransactionSchema,
+  computeDerivedValues,
   type AddTransactionFormValues,
 } from "@/features/debts/schemas/add-transaction-schema";
 import { useAddCycleRow } from "@/features/debts/hooks/use-add-cycle-row";
@@ -33,16 +35,6 @@ const typeOptions = [
   { value: "Out", label: "Out" },
 ];
 
-const defaultValues: AddTransactionFormValues = {
-  type: "Out",
-  date: new Date().toISOString().slice(0, 10),
-  shop: "",
-  notes: "",
-  amount: 0,
-  percentBack: 0,
-  cashbackAmount: 0,
-};
-
 export function AddTransactionSheet({ cycleId }: AddTransactionSheetProps) {
   const [open, setOpen] = useState(false);
   const addRow = useAddCycleRow();
@@ -53,18 +45,31 @@ export function AddTransactionSheet({ cycleId }: AddTransactionSheetProps) {
     reset,
     formState: { errors, isSubmitting },
     watch,
-    setValue,
   } = useForm<AddTransactionFormValues>({
     resolver: zodResolver(addTransactionSchema),
-    defaultValues,
+    defaultValues: {
+      type: "Out",
+      date: new Date().toISOString().slice(0, 10),
+      shop: "",
+      notes: "",
+      amount: undefined as unknown as number,
+      percentBack: undefined as unknown as number,
+      cashbackAmount: undefined as unknown as number,
+    },
   });
 
-  const percentBack = watch("percentBack");
-  const cashbackAmount = watch("cashbackAmount");
+  const watched = watch();
+  const preview = useMemo(() => {
+    const amount = Number(watched.amount) || 0;
+    const percentBack = Number(watched.percentBack) || 0;
+    const cashbackAmount = Number(watched.cashbackAmount) || 0;
+    if (amount <= 0) return null;
+    return computeDerivedValues({ amount, percentBack, cashbackAmount });
+  }, [watched.amount, watched.percentBack, watched.cashbackAmount]);
 
   const handleFormSubmit = async (data: AddTransactionFormValues) => {
     await addRow.mutateAsync({ ...data, cycleId });
-    reset(defaultValues);
+    reset();
     setOpen(false);
   };
 
@@ -73,7 +78,7 @@ export function AddTransactionSheet({ cycleId }: AddTransactionSheetProps) {
   const handleOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen);
     if (!nextOpen) {
-      reset(defaultValues);
+      reset();
     }
   };
 
@@ -139,9 +144,9 @@ export function AddTransactionSheet({ cycleId }: AddTransactionSheetProps) {
             <Label htmlFor="amount">Amount</Label>
             <Input
               id="amount"
-              type="number"
-              step="any"
-              placeholder="0"
+              type="text"
+              inputMode="decimal"
+              placeholder="e.g. 100000"
               {...register("amount")}
             />
             {errors.amount && (
@@ -152,26 +157,17 @@ export function AddTransactionSheet({ cycleId }: AddTransactionSheetProps) {
           {/* Cashback section */}
           <div className="rounded-md border p-4 space-y-3 bg-muted/20">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-              Cashback — use percentage <em>or</em> fixed amount, not both
+              Cashback (optional)
             </p>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label htmlFor="percentBack">% Back</Label>
                 <Input
                   id="percentBack"
-                  type="number"
-                  min="0"
-                  max="100"
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="0"
                   {...register("percentBack")}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    register("percentBack").onChange(e);
-                    if (parseFloat(val) > 0) {
-                      setValue("cashbackAmount", 0, { shouldValidate: true });
-                    }
-                  }}
                 />
                 {errors.percentBack && (
                   <p className="text-xs text-destructive">{errors.percentBack.message}</p>
@@ -181,30 +177,41 @@ export function AddTransactionSheet({ cycleId }: AddTransactionSheetProps) {
                 <Label htmlFor="cashbackAmount">đ Back (fixed)</Label>
                 <Input
                   id="cashbackAmount"
-                  type="number"
-                  min="0"
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="0"
                   {...register("cashbackAmount")}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    register("cashbackAmount").onChange(e);
-                    if (parseFloat(val) > 0) {
-                      setValue("percentBack", 0, { shouldValidate: true });
-                    }
-                  }}
                 />
                 {errors.cashbackAmount && (
                   <p className="text-xs text-destructive">{errors.cashbackAmount.message}</p>
                 )}
               </div>
             </div>
-            {percentBack > 0 && cashbackAmount > 0 && (
-              <p className="text-xs text-destructive">
-                Use either percentage cashback or fixed cashback, not both
-              </p>
-            )}
           </div>
+
+          {/* Live preview */}
+          {preview && (
+            <div className="rounded-md border bg-primary/5 p-4 space-y-2">
+              <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                <Calculator className="h-3.5 w-3.5" />
+                Summary
+              </div>
+              <div className="grid grid-cols-3 gap-3 text-sm">
+                <div>
+                  <span className="text-xs text-muted-foreground">Amount</span>
+                  <p className="font-semibold">{formatCurrency(Number(watched.amount) || 0)}</p>
+                </div>
+                <div>
+                  <span className="text-xs text-muted-foreground">Total Back</span>
+                  <p className="font-semibold text-blue-600">{formatCurrency(preview.totalBack)}</p>
+                </div>
+                <div>
+                  <span className="text-xs text-muted-foreground">Final Price</span>
+                  <p className="font-bold text-lg">{formatCurrency(preview.finalPrice)}</p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Submit / Cancel */}
           <div className="flex gap-3 pt-2">

@@ -70,7 +70,7 @@ describe("AddTransactionSheet", () => {
     expect(screen.getByLabelText("Notes")).toBeInTheDocument();
     expect(screen.getByLabelText("Amount")).toBeInTheDocument();
     expect(screen.getByLabelText("% Back")).toBeInTheDocument();
-    expect(screen.getByText(/Cashback/)).toBeInTheDocument();
+    expect(screen.getByText(/cashback/i)).toBeInTheDocument();
   });
 
   it("closes sheet on Cancel button", async () => {
@@ -98,27 +98,28 @@ describe("AddTransactionSheet", () => {
       </Wrapper>
     );
 
-    // Open sheet
     await user.click(screen.getByRole("button", { name: /add transaction/i }));
 
-    // Fill Type (default is Out, skip)
     // Fill Date
     const dateInput = screen.getByLabelText("Date");
     await user.clear(dateInput);
     await user.type(dateInput, "2025-06-15");
 
     // Fill Shop
-    const shopInput = screen.getByLabelText("Shop");
-    await user.type(shopInput, "Test Shop");
+    await user.type(screen.getByLabelText("Shop"), "Test Shop");
 
     // Fill Amount
-    const amountInput = screen.getByLabelText("Amount");
-    await user.type(amountInput, "100000");
+    await user.type(screen.getByLabelText("Amount"), "100000");
+
+    // Fill % Back
+    await user.type(screen.getByLabelText("% Back"), "5");
+
+    // Fill fixed cashback
+    await user.type(screen.getByLabelText("đ Back (fixed)"), "2000");
 
     // Submit
-    await user.click(screen.getByRole("button", { name: /add transaction/i }));
+    await user.click(screen.getByRole("button", { name: /add transaction$/i }));
 
-    // Wait for async
     await vi.waitFor(() => {
       expect(mockMutateAsync).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -126,13 +127,14 @@ describe("AddTransactionSheet", () => {
           type: "Out",
           amount: 100000,
           shop: "Test Shop",
+          percentBack: 5,
+          cashbackAmount: 2000,
         })
       );
     });
   });
 
   it("shows loading state while submitting", async () => {
-    // Keep mutateAsync pending
     mockMutateAsync.mockReturnValue(new Promise(() => {}));
 
     const user = userEvent.setup();
@@ -143,15 +145,37 @@ describe("AddTransactionSheet", () => {
     );
 
     await user.click(screen.getByRole("button", { name: /add transaction/i }));
-
-    // Fill required fields
     await user.type(screen.getByLabelText("Shop"), "Test");
     await user.type(screen.getByLabelText("Amount"), "50000");
 
-    // Submit
-    const submitBtn = screen.getByRole("button", { name: /^add transaction$/i });
-    await user.click(submitBtn);
+    await user.click(screen.getByRole("button", { name: /^add transaction$/i }));
 
     expect(screen.getByRole("button", { name: /adding/i })).toBeInTheDocument();
+  });
+
+  it("shows live preview summary when amount is entered", async () => {
+    const user = userEvent.setup();
+    render(
+      <Wrapper>
+        <AddTransactionSheet cycleId="c1" />
+      </Wrapper>
+    );
+
+    await user.click(screen.getByRole("button", { name: /add transaction/i }));
+
+    // Preview should not be visible initially
+    expect(screen.queryByText("Summary")).not.toBeInTheDocument();
+
+    // Enter amount
+    await user.type(screen.getByLabelText("Amount"), "100000");
+
+    // Preview should appear
+    expect(screen.getByText("Summary")).toBeInTheDocument();
+
+    // Enter % Back
+    await user.type(screen.getByLabelText("% Back"), "10");
+
+    // Check formatted values visible
+    expect(screen.getByText("100,000")).toBeInTheDocument();
   });
 });

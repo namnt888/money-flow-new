@@ -18,11 +18,25 @@ export const addTransactionSchema = z
     cashbackAmount: z.coerce.number().min(0),
   })
   .refine(
-    (data) => !(data.percentBack > 0 && data.cashbackAmount > 0),
+    (data) => {
+      const totalBack = (data.amount * data.percentBack) / 100 + data.cashbackAmount;
+      return totalBack <= data.amount;
+    },
     {
-      message: "Use either percentage cashback or fixed cashback, not both",
+      message: "Total cashback (percentage + fixed) must not exceed the amount",
       path: ["cashbackAmount"],
     }
   );
 
 export type AddTransactionFormValues = z.infer<typeof addTransactionSchema>;
+
+/** Helper to compute derived values for preview and internal use */
+export function computeDerivedValues(data: {
+  amount: number;
+  percentBack: number;
+  cashbackAmount: number;
+}) {
+  const totalBack = Math.round((data.amount * data.percentBack) / 100 + data.cashbackAmount);
+  const finalPrice = data.amount - totalBack;
+  return { totalBack, finalPrice };
+}
