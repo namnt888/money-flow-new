@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/format";
 import { CycleRowsTable } from "@/features/debts/components/cycle-rows-table";
+import { AddTransactionSheet } from "@/features/debts/components/add-transaction-sheet";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
@@ -111,7 +112,10 @@ export function CycleDetail({ debtId, cycleId }: { debtId: string; cycleId: stri
 
       {/* Cycle rows / activity area */}
       <div className="space-y-3 border-t pt-4">
-        <h3 className="text-lg font-semibold">Cycle Activity</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold">Cycle Activity</h3>
+          <AddTransactionSheet cycleId={cycleId} />
+        </div>
         <CycleRowsTable rows={rows ?? []} />
       </div>
     </div>
